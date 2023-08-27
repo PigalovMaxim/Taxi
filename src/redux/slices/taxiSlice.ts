@@ -7,6 +7,7 @@ export type TaxiSliceState = {
   isLoaded: boolean
   choosenTaxi?: Taxi
   address: Address
+  isError?: boolean
 }
 
 type Address = {
@@ -53,13 +54,17 @@ export const taxiSlice = createSlice({
     setAddress: (state, action: PayloadAction<Address>) => {
       state.address = action.payload
     },
+    setIsError: (state, action: PayloadAction<boolean>) => {
+      state.isError = action.payload
+    },
     reset: (state) => {
       state.availableCrew = [];
       state.choosenTaxi = undefined;
       state.isLoaded = false;
+      state.isError = undefined;
     }
   },
 });
 
-export const { setAvailableCrew, setIsLoading, setAddress, setIsLoaded, setChoosenTaxi, reset } = taxiSlice.actions;
+export const { setAvailableCrew, setIsLoading, setAddress, setIsLoaded, setChoosenTaxi, reset, setIsError } = taxiSlice.actions;
 export default taxiSlice.reducer;

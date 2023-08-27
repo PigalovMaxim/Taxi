@@ -7,6 +7,7 @@ import {
   setAddress,
   setAvailableCrew,
   setChoosenTaxi,
+  setIsError,
   setIsLoaded,
   setIsLoading,
 } from "../../redux/slices/taxiSlice";
@@ -67,6 +68,7 @@ function TaxiContent() {
       const coords = coordsAnswer.geoObjects?.get(0)?.geometry?.getCoordinates();
       if (!coords) {
         toast.error("Адрес не найден", { autoClose: 3000 });
+        dispatch(setIsError(true));
         return;
       }
       dispatch(setAddress({ title, coords }));

@@ -6,6 +6,7 @@ import {
   TaxiSliceState,
   reset,
   setAddress,
+  setIsError,
   setIsLoaded,
   setIsLoading,
 } from "../../redux/slices/taxiSlice";
@@ -13,6 +14,7 @@ import FindedTaxi from "../../components/findedTaxi/findedTaxi";
 import { ToastContainer, toast } from "react-toastify";
 import { orderCar } from "../../services/taxi.service";
 import { formatDate } from "./taxiForm.options";
+import classNames from "classnames";
 
 function TaxiForm() {
   const { store, dispatch } = useRedux<TaxiSliceState>("taxi");
@@ -40,6 +42,13 @@ function TaxiForm() {
     dispatch(setAddress({ title: inputValue }));
   };
 
+  const onButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (inputValue === '') return dispatch(setIsError(true));
+    if (store.isLoading || store.isError) return;
+    store.isLoaded ? order() : setSearch();
+  }
+
   useEffect(() => {
     setInputValue(store.address.title || "");
   }, [store.address.title]);
@@ -57,20 +66,23 @@ function TaxiForm() {
             <input
               value={inputValue}
               onChange={(e) => {
-                if(store.isLoaded) dispatch(reset());
-                setInputValue(e.target.value)
+                if (store.isLoaded || store.isError) dispatch(reset());
+                setInputValue(e.target.value);
               }}
               placeholder="Улица, номер дома"
-              className="w-96 h-10 border border-black rounded-lg ml-4 outline-none px-4"
+              className={classNames(
+                "w-96 h-10 border border-black rounded-lg ml-4 outline-none px-4",
+                {
+                  "border border-red-400": store.isError,
+                }
+              )}
             />
           </div>
           <Button
-            onClick={(e) => {
-              e.preventDefault();
-              if (store.isLoading) return;
-              store.isLoaded ? order() : setSearch();
-            }}
-            className="w-full h-12 mt-4 font-semibold text-lg"
+            onClick={onButtonClickHandler}
+            className={classNames("w-full h-12 mt-4 font-semibold text-lg", {
+              "opacity-40": store.isError,
+            })}
             title={store.isLoaded ? "Заказать" : "Поиск машины"}
           />
         </form>
